@@ -18,11 +18,26 @@ function autoBinder(target, name, descriptor) {
     };
     return adjustedDescriptor;
 }
-//VALIDATORS
-function stringValidator(target, name, position) {
-    console.log(target);
+//Validation Function
+function Validate(validatableInput) {
+    var isValid = true;
+    if (validatableInput.required) {
+        isValid = isValid && validatableInput.value.toString().trim().length !== 0;
+    }
+    if (validatableInput.minLength != null && typeof validatableInput.value === "string") {
+        isValid = isValid && validatableInput.value.length >= validatableInput.minLength;
+    }
+    if (validatableInput.maxLength != null && typeof validatableInput.value === "string") {
+        isValid = isValid && validatableInput.value.length <= validatableInput.maxLength;
+    }
+    if (validatableInput.min != null && typeof validatableInput.value === "number") {
+        isValid = isValid && validatableInput.value >= validatableInput.min;
+    }
+    if (validatableInput.max != null && typeof validatableInput.value === "number") {
+        isValid = isValid && validatableInput.value <= validatableInput.max;
+    }
+    return isValid;
 }
-function numberValidator(target, name, position) { }
 //PROJECT INPUT CLASS
 var ProjectInput = /** @class */ (function () {
     function ProjectInput() {
@@ -41,7 +56,22 @@ var ProjectInput = /** @class */ (function () {
         var enteredTitle = this.titleInputElement.value;
         var enteredDescription = this.descriptionInputElement.value;
         var enteredPeople = this.peopleInputElement.value;
-        if (enteredTitle.trim().length === 0 || enteredDescription.trim().length === 0 || enteredPeople.trim().length === 0) {
+        var titleValidatable = {
+            value: enteredTitle,
+            required: true,
+        };
+        var descriptionValidatable = {
+            value: enteredTitle,
+            required: true,
+            minLength: 5,
+        };
+        var peopleValidatable = {
+            value: enteredTitle,
+            required: true,
+            min: 1,
+            max: 5,
+        };
+        if (!Validate(titleValidatable) || !Validate(descriptionValidatable) || !Validate(peopleValidatable)) {
             alert("Invalid Input");
             return;
         }
