@@ -6,17 +6,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 //AUTOBINDER DECORATOR
-function autoBind(target, name, descriptor) {
+function autoBinder(target, name, descriptor) {
     var originalMethod = descriptor.value;
-    var adjDescriptor = {
+    var adjustedDescriptor = {
         configurable: true,
+        enumerable: false,
         get: function () {
-            var boundFn = originalMethod.bind(this);
-            return boundFn;
+            var bindMethod = originalMethod.bind(this);
+            return bindMethod;
         },
     };
-    return adjDescriptor;
+    return adjustedDescriptor;
 }
+//VALIDATORS
+function stringValidator(target, name, position) {
+    console.log(target);
+}
+function numberValidator(target, name, position) { }
 //PROJECT INPUT CLASS
 var ProjectInput = /** @class */ (function () {
     function ProjectInput() {
@@ -31,9 +37,31 @@ var ProjectInput = /** @class */ (function () {
         this.configure();
         this.attach();
     }
+    ProjectInput.prototype.gatherUserInput = function () {
+        var enteredTitle = this.titleInputElement.value;
+        var enteredDescription = this.descriptionInputElement.value;
+        var enteredPeople = this.peopleInputElement.value;
+        if (enteredTitle.trim().length === 0 || enteredDescription.trim().length === 0 || enteredPeople.trim().length === 0) {
+            alert("Invalid Input");
+            return;
+        }
+        else {
+            return [enteredTitle, enteredDescription, +enteredPeople];
+        }
+    };
+    ProjectInput.prototype.clearInputs = function () {
+        this.titleInputElement.value = "";
+        this.descriptionInputElement.value = "";
+        this.peopleInputElement.value = "";
+    };
     ProjectInput.prototype.submitHandler = function (event) {
         event.preventDefault();
-        console.log(this.titleInputElement.value);
+        var userInput = this.gatherUserInput();
+        if (Array.isArray(userInput)) {
+            var title = userInput[0], description = userInput[1], people = userInput[2];
+            console.log(title, description, people);
+            this.clearInputs();
+        }
     };
     ProjectInput.prototype.configure = function () {
         this.element.addEventListener("submit", this.submitHandler);
@@ -42,7 +70,7 @@ var ProjectInput = /** @class */ (function () {
         this.hostElement.insertAdjacentElement("afterbegin", this.element);
     };
     __decorate([
-        autoBind
+        autoBinder
     ], ProjectInput.prototype, "submitHandler", null);
     return ProjectInput;
 }());

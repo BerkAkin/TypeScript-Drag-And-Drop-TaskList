@@ -1,15 +1,21 @@
 //AUTOBINDER DECORATOR
-function autoBind(target: any, name: string, descriptor: PropertyDescriptor) {
+function autoBinder(target: any, name: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
-  const adjDescriptor: PropertyDescriptor = {
+  const adjustedDescriptor: PropertyDescriptor = {
     configurable: true,
+    enumerable: false,
     get() {
-      const boundFn = originalMethod.bind(this);
-      return boundFn;
+      const bindMethod = originalMethod.bind(this);
+      return bindMethod;
     },
   };
-  return adjDescriptor;
+  return adjustedDescriptor;
 }
+//VALIDATORS
+function stringValidator(target: any, name: string, position: number) {
+  console.log(target);
+}
+function numberValidator(target: any, name: string, position: number) {}
 
 //PROJECT INPUT CLASS
 class ProjectInput {
@@ -32,10 +38,34 @@ class ProjectInput {
     this.configure();
     this.attach();
   }
-  @autoBind
+
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredPeople = this.peopleInputElement.value;
+    if (enteredTitle.trim().length === 0 || enteredDescription.trim().length === 0 || enteredPeople.trim().length === 0) {
+      alert("Invalid Input");
+      return;
+    } else {
+      return [enteredTitle, enteredDescription, +enteredPeople];
+    }
+  }
+
+  private clearInputs() {
+    this.titleInputElement.value = "";
+    this.descriptionInputElement.value = "";
+    this.peopleInputElement.value = "";
+  }
+
+  @autoBinder
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(this.titleInputElement.value);
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      const [title, description, people] = userInput;
+      console.log(title, description, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
