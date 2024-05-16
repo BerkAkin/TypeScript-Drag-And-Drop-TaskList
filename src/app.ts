@@ -45,6 +45,18 @@ class ProjectState extends State<Project> {
   public addProject(title: string, description: string, people: number) {
     const newProject = new Project(Math.random().toString(), title, description, people, ProjectStatus.Active);
     this.projects.push(newProject);
+    this.updateListeners();
+  }
+
+  public moveProject(projectId: string, newStatus: ProjectStatus) {
+    const project = this.projects.find((prj) => prj.id === projectId);
+    if (project && project.status !== newStatus) {
+      project.status = newStatus;
+      this.updateListeners();
+    }
+  }
+
+  private updateListeners() {
     for (const listenerFn of this.listeners) {
       listenerFn(this.projects.slice());
     }
@@ -171,11 +183,17 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> implements Drag
 
   @autoBinder
   dragOverHandler(event: DragEvent): void {
-    const listEl = this.element.querySelector("ul")!;
-    listEl.classList.add("droppable");
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      event.preventDefault();
+      const listEl = this.element.querySelector("ul")!;
+      listEl.classList.add("droppable");
+    }
   }
   @autoBinder
-  dropHandler(event: DragEvent): void {}
+  dropHandler(event: DragEvent): void {
+    const prjId = event.dataTransfer!.getData("text/plain");
+    projectState.moveProject(prjId, this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished);
+  }
 }
 
 //PROJECT INPUT CLASS
@@ -271,12 +289,11 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements 
   }
 
   @autoBinder
-  dragEndHandler(event: DragEvent): void {
-    console.log(event);
-  }
+  dragEndHandler(event: DragEvent): void {}
   @autoBinder
   dragStartHandler(event: DragEvent): void {
-    console.log("drag start");
+    event.dataTransfer!.setData("text/plain", this.project.id);
+    event.dataTransfer!.effectAllowed = "move";
   }
   configure() {
     this.element.addEventListener("dragstart", this.dragStartHandler);

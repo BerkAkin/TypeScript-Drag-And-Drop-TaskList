@@ -65,6 +65,16 @@ var ProjectState = /** @class */ (function (_super) {
     ProjectState.prototype.addProject = function (title, description, people) {
         var newProject = new Project(Math.random().toString(), title, description, people, ProjectStatus.Active);
         this.projects.push(newProject);
+        this.updateListeners();
+    };
+    ProjectState.prototype.moveProject = function (projectId, newStatus) {
+        var project = this.projects.find(function (prj) { return prj.id === projectId; });
+        if (project && project.status !== newStatus) {
+            project.status = newStatus;
+            this.updateListeners();
+        }
+    };
+    ProjectState.prototype.updateListeners = function () {
         for (var _i = 0, _a = this.listeners; _i < _a.length; _i++) {
             var listenerFn = _a[_i];
             listenerFn(this.projects.slice());
@@ -170,10 +180,16 @@ var ProjectList = /** @class */ (function (_super) {
         listEl.classList.remove("droppable");
     };
     ProjectList.prototype.dragOverHandler = function (event) {
-        var listEl = this.element.querySelector("ul");
-        listEl.classList.add("droppable");
+        if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+            event.preventDefault();
+            var listEl = this.element.querySelector("ul");
+            listEl.classList.add("droppable");
+        }
     };
-    ProjectList.prototype.dropHandler = function (event) { };
+    ProjectList.prototype.dropHandler = function (event) {
+        var prjId = event.dataTransfer.getData("text/plain");
+        projectState.moveProject(prjId, this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished);
+    };
     __decorate([
         autoBinder
     ], ProjectList.prototype, "dragLeaveHandler", null);
@@ -272,11 +288,10 @@ var ProjectItem = /** @class */ (function (_super) {
         this.element.querySelector("h3").textContent = this.persons + " assigned";
         this.element.querySelector("p").textContent = this.project.description;
     };
-    ProjectItem.prototype.dragEndHandler = function (event) {
-        console.log(event);
-    };
+    ProjectItem.prototype.dragEndHandler = function (event) { };
     ProjectItem.prototype.dragStartHandler = function (event) {
-        console.log("drag start");
+        event.dataTransfer.setData("text/plain", this.project.id);
+        event.dataTransfer.effectAllowed = "move";
     };
     ProjectItem.prototype.configure = function () {
         this.element.addEventListener("dragstart", this.dragStartHandler);
