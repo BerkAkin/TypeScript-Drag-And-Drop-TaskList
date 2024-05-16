@@ -53,7 +53,7 @@ var ProjectList = /** @class */ (function () {
     ProjectList.prototype.renderContent = function () {
         var listId = "".concat(this.type, "-projects-list");
         this.element.querySelector("ul").id = listId;
-        this.element.querySelector("h2").textContent = this.type.toUpperCase() + "PROJECTS";
+        this.element.querySelector("h2").textContent = this.type.toUpperCase() + " PROJECTS";
     };
     ProjectList.prototype.attach = function () {
         this.hostElement.insertAdjacentElement("beforeend", this.element);
