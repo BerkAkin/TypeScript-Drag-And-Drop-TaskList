@@ -1,10 +1,36 @@
 "use strict";
+//Project State Management Class
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var ProjectState = /** @class */ (function () {
+    function ProjectState() {
+        this.projects = [];
+    }
+    ProjectState.getInstance = function () {
+        if (this.instance) {
+            return this.instance;
+        }
+        else {
+            this.instance = new ProjectState();
+            return this.instance;
+        }
+    };
+    ProjectState.prototype.addProject = function (title, description, people) {
+        var newProject = {
+            id: Math.random().toString(),
+            title: title,
+            description: description,
+            people: people,
+        };
+        this.projects.push(newProject);
+    };
+    return ProjectState;
+}());
+var projectState = ProjectState.getInstance();
 //AUTOBINDER DECORATOR
 function autoBinder(target, name, descriptor) {
     var originalMethod = descriptor.value;
@@ -58,6 +84,7 @@ var ProjectList = /** @class */ (function () {
     ProjectList.prototype.attach = function () {
         this.hostElement.insertAdjacentElement("beforeend", this.element);
     };
+    ProjectList.prototype.addProject = function () { };
     return ProjectList;
 }());
 //PROJECT INPUT CLASS

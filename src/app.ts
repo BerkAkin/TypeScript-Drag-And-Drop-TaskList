@@ -1,3 +1,30 @@
+//Project State Management Class
+
+class ProjectState {
+  private projects: any[] = [];
+  private static instance: ProjectState;
+  private constructor() {}
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    } else {
+      this.instance = new ProjectState();
+      return this.instance;
+    }
+  }
+  public addProject(title: string, description: string, people: number) {
+    const newProject = {
+      id: Math.random().toString(),
+      title: title,
+      description: description,
+      people: people,
+    };
+    this.projects.push(newProject);
+  }
+}
+
+const projectState = ProjectState.getInstance();
+
 //AUTOBINDER DECORATOR
 function autoBinder(target: any, name: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
@@ -65,6 +92,8 @@ class ProjectList {
   private attach() {
     this.hostElement.insertAdjacentElement("beforeend", this.element);
   }
+
+  addProject() {}
 }
 
 //PROJECT INPUT CLASS
