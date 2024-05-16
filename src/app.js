@@ -95,7 +95,15 @@ var ProjectList = /** @class */ (function () {
         this.element = importedNode.firstElementChild;
         this.element.id = "".concat(this.type, "-projects");
         projectState.addListener(function (projects) {
-            _this.assignedProjects = projects;
+            var relevantProjects = projects.filter(function (prj) {
+                if (_this.type === "active") {
+                    return prj.status === ProjectStatus.Active;
+                }
+                else {
+                    return prj.status === ProjectStatus.Finished;
+                }
+            });
+            _this.assignedProjects = relevantProjects;
             _this.renderProjects();
         });
         this.attach();
@@ -103,6 +111,7 @@ var ProjectList = /** @class */ (function () {
     }
     ProjectList.prototype.renderProjects = function () {
         var listEl = document.getElementById("".concat(this.type, "-projects-list"));
+        listEl.innerHTML = "";
         for (var _i = 0, _a = this.assignedProjects; _i < _a.length; _i++) {
             var prjItem = _a[_i];
             var listItem = document.createElement("li");
