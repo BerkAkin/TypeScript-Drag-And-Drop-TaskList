@@ -33,7 +33,7 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  background: #fff5f9;
+  background: #e6faea;
 }
 
 button {
@@ -88,6 +88,7 @@ button:active {
 }
 
 .projects li {
+  background-color: white;
   box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.26);
   padding: 1rem;
   margin: 1rem;
@@ -112,7 +113,7 @@ button:active {
 }
 
 .droppable {
-  background: #ffe3ee;
+  background: #e3ffe7;
 }
 
 #finished-projects .droppable {

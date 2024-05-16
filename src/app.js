@@ -149,6 +149,9 @@ var ProjectList = /** @class */ (function (_super) {
     };
     ProjectList.prototype.configure = function () {
         var _this = this;
+        this.element.addEventListener("dragover", this.dragOverHandler);
+        this.element.addEventListener("dragleave", this.dragLeaveHandler);
+        this.element.addEventListener("drop", this.dropHandler);
         projectState.addListener(function (projects) {
             var relevantProjects = projects.filter(function (prj) {
                 if (_this.type === "active") {
@@ -162,6 +165,24 @@ var ProjectList = /** @class */ (function (_super) {
             _this.renderProjects();
         });
     };
+    ProjectList.prototype.dragLeaveHandler = function (event) {
+        var listEl = this.element.querySelector("ul");
+        listEl.classList.remove("droppable");
+    };
+    ProjectList.prototype.dragOverHandler = function (event) {
+        var listEl = this.element.querySelector("ul");
+        listEl.classList.add("droppable");
+    };
+    ProjectList.prototype.dropHandler = function (event) { };
+    __decorate([
+        autoBinder
+    ], ProjectList.prototype, "dragLeaveHandler", null);
+    __decorate([
+        autoBinder
+    ], ProjectList.prototype, "dragOverHandler", null);
+    __decorate([
+        autoBinder
+    ], ProjectList.prototype, "dropHandler", null);
     return ProjectList;
 }(Component));
 //PROJECT INPUT CLASS
@@ -246,12 +267,27 @@ var ProjectItem = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    ProjectItem.prototype.configure = function () { };
     ProjectItem.prototype.renderContent = function () {
         this.element.querySelector("h2").textContent = this.project.title;
         this.element.querySelector("h3").textContent = this.persons + " assigned";
         this.element.querySelector("p").textContent = this.project.description;
     };
+    ProjectItem.prototype.dragEndHandler = function (event) {
+        console.log(event);
+    };
+    ProjectItem.prototype.dragStartHandler = function (event) {
+        console.log("drag start");
+    };
+    ProjectItem.prototype.configure = function () {
+        this.element.addEventListener("dragstart", this.dragStartHandler);
+        this.element.addEventListener("dragend", this.dragEndHandler);
+    };
+    __decorate([
+        autoBinder
+    ], ProjectItem.prototype, "dragEndHandler", null);
+    __decorate([
+        autoBinder
+    ], ProjectItem.prototype, "dragStartHandler", null);
     return ProjectItem;
 }(Component));
 var projectInput = new ProjectInput();
