@@ -3,18 +3,25 @@ enum ProjectStatus {
   Active,
   Finished,
 }
-type Listener = (items: Project[]) => void;
+type Listener<T> = (items: T[]) => void;
 
 class Project {
   constructor(public id: string, public title: string, public description: string, public people: number, public status: ProjectStatus) {}
 }
+class State<T> {
+  protected listeners: Listener<T>[] = [];
+  addListener(listener: Listener<T>) {
+    this.listeners.push(listener);
+  }
+}
 
 //Project State Management Class
-class ProjectState {
-  private listeners: Listener[] = [];
+class ProjectState extends State<Project> {
   private projects: Project[] = [];
   private static instance: ProjectState;
-  private constructor() {}
+  private constructor() {
+    super();
+  }
   static getInstance() {
     if (this.instance) {
       return this.instance;
@@ -23,9 +30,7 @@ class ProjectState {
       return this.instance;
     }
   }
-  addListener(listener: Listener) {
-    this.listeners.push(listener);
-  }
+
   public addProject(title: string, description: string, people: number) {
     const newProject = new Project(Math.random().toString(), title, description, people, ProjectStatus.Active);
     this.projects.push(newProject);

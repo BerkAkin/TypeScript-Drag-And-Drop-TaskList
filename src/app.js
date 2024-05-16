@@ -36,11 +36,22 @@ var Project = /** @class */ (function () {
     }
     return Project;
 }());
-//Project State Management Class
-var ProjectState = /** @class */ (function () {
-    function ProjectState() {
+var State = /** @class */ (function () {
+    function State() {
         this.listeners = [];
-        this.projects = [];
+    }
+    State.prototype.addListener = function (listener) {
+        this.listeners.push(listener);
+    };
+    return State;
+}());
+//Project State Management Class
+var ProjectState = /** @class */ (function (_super) {
+    __extends(ProjectState, _super);
+    function ProjectState() {
+        var _this = _super.call(this) || this;
+        _this.projects = [];
+        return _this;
     }
     ProjectState.getInstance = function () {
         if (this.instance) {
@@ -51,9 +62,6 @@ var ProjectState = /** @class */ (function () {
             return this.instance;
         }
     };
-    ProjectState.prototype.addListener = function (listener) {
-        this.listeners.push(listener);
-    };
     ProjectState.prototype.addProject = function (title, description, people) {
         var newProject = new Project(Math.random().toString(), title, description, people, ProjectStatus.Active);
         this.projects.push(newProject);
@@ -63,7 +71,7 @@ var ProjectState = /** @class */ (function () {
         }
     };
     return ProjectState;
-}());
+}(State));
 var projectState = ProjectState.getInstance();
 //AUTOBINDER DECORATOR
 function autoBinder(target, name, descriptor) {
